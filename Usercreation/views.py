@@ -1,18 +1,18 @@
 import json
 from sqlite3 import IntegrityError
-from itsdangerous import Serializer
-from rest_framework import generics, permissions
+
 from rest_framework.response import Response
 from django.forms import ValidationError
 from Usercreation.serializer import RegistrationSerializer,CampaignsSerializer, OrganizationSerializer
 from rest_framework.authtoken.models import Token
-from .models import Users
+from .models import Campaigns, Users
 from rest_framework.views import APIView
 from .serializer import  RegistrationSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.permissions import AllowAny
-from rest_framework import generics
+from rest_framework import generics,status
+from rest_framework import viewsets
 
 
 # @api_view(["POST"])
@@ -122,10 +122,29 @@ class OrganizationView(APIView):
         return Response(serializer.data)
 
 
-class CampignsView(APIView):
-    serializer_class =  CampaignsSerializer
-    def post(self,request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+
+
+
+@api_view(['GET', 'POST'])
+def CampignsView(request, Email_Address=None,**validated_data):
+    try:
+        
+        user = Users.objects.filter(Email_Address = Email_Address).first()
+
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        contents = Campaigns.objects.filter(user= user.pk)
+        serializer = CampaignsSerializer(contents, many=True)
         return Response(serializer.data)
+
+    elif request.method == 'POST':
+        request.data["user"] = user.id
+        serializer = CampaignsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+

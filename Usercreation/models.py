@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 from django.contrib.auth.hashers import make_password
+from django.forms import SlugField
 
 class MyAccountManager(BaseUserManager):
     def create_user(self, Email_Address, fullname=None, birthday=None, zipcode=None,password=None

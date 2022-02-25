@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'Usercreation',
     "rest_framework",
     "rest_framework.authtoken",
+    'rest_framework_swagger',
+    'drf_yasg',
     
 ]
 
@@ -79,9 +81,31 @@ REST_FRAMEWORK = {
     ],
 'DEFAULT_PERMISSION_CLASSES': [
     'rest_framework.permissions.IsAuthenticated',
-]
+],
+ 'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 WSGI_APPLICATION = 'Manyuser.wsgi.application'
+
+SWAGGER_SETTINGS = {
+    "exclude_namespaces": ['rest_logout', ],  # List URL namespaces to ignore
+    "SUPPORTED_SUBMIT_METHODS": [  # Specify which methods to enable in Swagger UI
+        'get',
+        'post',
+        'put',
+        'delete'
+    ],
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        }
+    },
+    'USE_SESSION_AUTH': True,
+    'JSON_EDITOR': True,
+    'REFETCH_SCHEMA_ON_LOGOUT': True
+
+}
 
 
 # Database
